@@ -9,7 +9,7 @@ const ConfigurationObs = () => {
         ip: "",
         puerto: "",
         password: "",
-        path: ""
+        name: ""
     })
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
