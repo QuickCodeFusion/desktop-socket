@@ -1,9 +1,16 @@
 import Head from "next/head"
 import Input from "../components/ui/Input"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "../components/ui/Button"
 import { Title } from "../components/ui/Title"
 import { useObs } from "../utils/OBSSocket"
+
+interface ObsConfig {
+    ip: string
+    puerto: string
+    password: string
+    name: string
+}
 
 const ConfigurationObs = () => {
     const [form, setForm] = useState({
@@ -24,6 +31,14 @@ const ConfigurationObs = () => {
         setForm({ ...form, [name]: value })
     }
 
+    const [configs, setConfigs] = useState([])
+
+    useEffect(() => {
+        window.ipc.on("get-obs-config", (data: ObsConfig[]) => {
+            setConfigs(data)
+        })
+        window.ipc.send("get-obs", {})
+    }, [])
     return (
         <div className="flex gap-10 items-center flex-col p-4">
             <Title>Configuracion de OBS</Title>
@@ -33,7 +48,12 @@ const ConfigurationObs = () => {
                 <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
                 <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
                 <span className="place-self-center col-span-2 m-10 flex gap-4 w-full justify-center">
-                    <Button name="save" type="submit" className="w-fit">Guardar</Button>
+                    <Button onClick={() => {
+                        window.ipc.send("save-obs", form)
+                        setConfigs((prev) => {
+                            return [...prev, form]
+                        })
+                    }} name="save" type="submit" className="w-fit">Guardar</Button>
                     <Button onClick={() => {
                         obs.connect(`ws://${form.ip}:${form.puerto}`, form.password)
                         .then(() => {
@@ -57,6 +77,16 @@ const ConfigurationObs = () => {
                 <h1>{errorMessage}</h1>
                 <Button onClick={() => setIsError(false)}>Ok</Button>
                 </span>}
+                {
+                    configs && configs.map((item, index) => (
+                        <div key={index}>
+                            <p>Ip: {item.ip}</p>
+                            <p>Puerto: {item.puerto}</p>
+                            <p>Password: {item.password}</p>
+                            <p>Name: {item.name}</p>
+                        </div>
+                    ))
+                }
 
         </div>        
     )
