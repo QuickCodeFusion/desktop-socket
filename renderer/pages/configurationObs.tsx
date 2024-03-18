@@ -1,21 +1,32 @@
 import Head from "next/head"
-import Input from "../components/Input"
+import Input from "../components/ui/Input"
 import { useState } from "react"
 
 const ConfigurationObs = () => {
-    const [form, setForm] = useState({})
+    const [form, setForm] = useState({
+        ip: "",
+        puerto: "",
+        password: "",
+        path: ""
+    })
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target
+        setForm({ ...form, [name]: value })
+    }
+    
 
     return (
-        <div className="border flex gap-10 items-center flex-col">
+        <div className="flex gap-10 items-center flex-col p-4">
             <Head>
                 <title>ConfigurationObs</title>
             </Head>
-            <h1>ConfigurationObs</h1>
-            <form className="grid grid-cols-1">
-                <Input type="text" label="Ip: " name="ip" setValue={setForm}/>
-                <Input type="text" label="Port: " name="port" setValue={setForm}/>
-                <Input type="text" label="Password: " name="password" setValue={setForm}/>
-                <Input type="text" label="Path: " name="path" setValue={setForm}/>
+            <h1>Configuracion de OBS</h1>
+            <form className="grid grid-cols-2">
+                <Input type="text" value={form.ip} label="Ip: " name="ip" setValue={handleInputChange}/>
+                <Input type="text" value={form.puerto} label="Puerto: " name="puerto" setValue={handleInputChange}/>
+                <Input type="text" value={form.password} label="Password: " name="password" setValue={handleInputChange}/>
+                <Input type="text" value={form.path} label="Nombre de sesion: " name="path" setValue={handleInputChange}/>
             </form>
         </div>        
     )
