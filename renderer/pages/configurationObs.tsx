@@ -19,15 +19,18 @@ const ConfigurationObs = () => {
     return (
         <div className="flex gap-10 items-center flex-col p-4">
             <Head>
-                <title>ConfigurationObs</title>
+                <title>Configuracion de OBS</title>
             </Head>
             <h1>Configuracion de OBS</h1>
-            <form onSubmit={() => console.log(form)} className="grid grid-cols-2">
+            <form onSubmit={(e) => e.preventDefault()} className="grid  grid-cols-2">
                 <Input type="text" label="Ip: " name="ip" setValue={handleInputChange}/>
                 <Input type="text" label="Puerto: " name="puerto" setValue={handleInputChange}/>
                 <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
                 <Input type="text"  label="Nombre de sesion: " name="path" setValue={handleInputChange}/>
-                <Button type="submit">Guardar</Button>
+                <span className="place-self-center col-span-2 flex gap-4 w-full justify-center">
+                    <Button name="test" type="submit" className="w-fit">Guardar</Button>
+                    <Button className="w-fit bg-slate-600">Probar conexión</Button>
+                </span>
             </form>
         </div>        
     )
