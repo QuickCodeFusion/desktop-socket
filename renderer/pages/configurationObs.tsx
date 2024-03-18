@@ -19,9 +19,6 @@ const ConfigurationObs = () => {
 
     return (
         <div className="flex gap-10 items-center flex-col p-4">
-            <Head>
-                <title>Configuracion de OBS</title>
-            </Head>
             <Title>Configuracion de OBS</Title>
             <form onSubmit={(e) => e.preventDefault()} className="grid  grid-cols-2">
                 <Input type="text" label="Ip: " name="ip" setValue={handleInputChange}/>
