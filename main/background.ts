@@ -57,7 +57,7 @@ app.on('window-all-closed', () => {
 })
 
 ipcMain.on('get-obs', (event) => {
-  event.reply('get-obs-config', store.get('obs') || {})
+  event.reply('get-obs-config', store.get('obs') || [])
 })
 
 ipcMain.on('save-obs', (_event, arg) => {
