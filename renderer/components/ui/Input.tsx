@@ -11,10 +11,10 @@ const Input: React.FC<InputProps> = ({type, label, setValue, name, className, ..
             {label && <label className="">{label}</label>}
             <input
             {...props}
-            className={`bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 m-2 ${className}`}
+            className={`bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 m-2 text-black ${className}`}
             type={type}
             name={name}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={setValue}
             />
         </div>
     )
