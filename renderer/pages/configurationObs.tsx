@@ -24,7 +24,7 @@ const ConfigurationObs = () => {
                 <Input type="text" label="Ip: " name="ip" setValue={handleInputChange}/>
                 <Input type="text" label="Puerto: " name="puerto" setValue={handleInputChange}/>
                 <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
-                <Input type="text"  label="Nombre de sesion: " name="path" setValue={handleInputChange}/>
+                <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
                 <span className="place-self-center col-span-2 m-10 flex gap-4 w-full justify-center">
                     <Button name="test" type="submit" className="w-fit">Guardar</Button>
                     <Button className="w-fit bg-slate-600">Probar conexión</Button>
