@@ -6,7 +6,7 @@ export default function HomePage() {
       <Head>
         <title>Home - Nextron (with-tailwindcss)</title>
       </Head>
-      <Link href="/configurationObs">Go to Configuration obs</Link>
+      
 
     </>
   )
