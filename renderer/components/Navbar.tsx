@@ -9,11 +9,15 @@ const Navbar = () => {
         {
             name: "Configuracion de OBS",
             path: "/configurationObs"
+        },
+        {
+            name: "Configuracion remota ",
+            path: "/configurationRemoteConfig"
         }
     ]
 
     return(
-        <div className="w-screen grid grid-cols-3">
+        <div className="w-screen grid grid-cols-3 p-2 bg-slate-800">
             <span className="flex justify-center gap-4 col-span-3">
                 {
                     items.map((item, index) => 
