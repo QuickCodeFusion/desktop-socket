@@ -23,18 +23,13 @@ const ConfigurationObs = () => {
         const { name, value } = event.target
         setForm({ ...form, [name]: value })
     }
-
-    // const dotIp = () => {
-    //     const ipFormated = form.ip.replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, '$1.')
-    //     setForm({ ...form, ip: ipFormated })
-    // };
     
 
     useEffect(() => {
         const validateForm = () => {
             const errors = {
-                ip: !validateIpV4(form.ip) ? 'El formato de IP no es correcto' : '',
-                puerto: !validatePort(form.puerto) ? 'El puerto debe ser un número válido' : '',
+                ip: form.ip !== '' && !validateIpV4(form.ip) ? 'El formato de IP no es correcto' : '',
+                puerto: form.puerto !== '' && !validatePort(form.puerto) ? 'El puerto debe ser un número válido' : '',
                 password: '',
                 name: ''
             };
@@ -44,23 +39,27 @@ const ConfigurationObs = () => {
         validateForm();
     },[form])
 
+    console.log(error);
+
     return (
         <div className="flex gap-10 items-center flex-col p-4">
             <Title>Configuracion de OBS</Title>
             <form onSubmit={(e) => e.preventDefault()} className="grid  grid-cols-2">
-                <div className="flex flex-col">
-                    <Input type="text" label="Ip: " name="ip" setValue={handleInputChange}/>
+                <span className="flex flex-col items-center justify-self-end ">
+                    <Input type="text" label="Ip: " name="ip" className={error.ip !== '' && 'border-red-400 focus:border-red-600'} setValue={handleInputChange}/>
                     {error.ip !== '' && <p className="text-red-500">{error.ip}</p>}
-                </div>
-                <div>
-                    <Input type="text" label="Puerto: " name="puerto" setValue={handleInputChange}/>
+                </span>
+                <span className="flex flex-col items-center justify-self-end ">
+                    <Input type="text" label="Puerto: " className={error.ip !== '' && 'border-red-400 focus:border-red-600'} name="puerto" setValue={handleInputChange}/>
                     {error.puerto !== '' && <p className="text-red-500">{error.puerto}</p>}
-                </div>
+                </span>
                 <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
                 <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
                 <span className="place-self-center col-span-2 m-10 flex gap-4 w-full justify-center">
-                    <Button name="save" type="submit" className="w-fit">Guardar</Button>
-                    <Button name="test" className="w-fit bg-slate-600">Probar conexión</Button>
+                    <Button name="save"
+                     disabled={form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || error.ip !== '' || error.puerto !== '' || error.password !== '' || error.name !== ''}
+                     type="submit" className={'w-fit  disabled:bg-slate-400 disabled:hover:disabled'}>Guardar</Button>
+                    <Button disabled={form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || error.ip !== '' || error.puerto !== '' || error.password !== '' || error.name !== ''} name="test" className="w-fit disabled:bg-slate-400 disabled:hover:disabled bg-slate-600">Probar conexión</Button>
                 </span>
             </form>
         </div>        
