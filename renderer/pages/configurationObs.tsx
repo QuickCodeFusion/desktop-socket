@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import Button from "../components/ui/Button"
 import { Title } from "../components/ui/Title"
 import { validateIpV4, validatePort } from "../utils/validations"
-import { useObs, useObsConnect } from "../utils/OBSSocket"
+import { useObs, useObsConnect } from "../utils/hooks/OBSSocket"
+import { useStateWithCallback } from "../utils/hooks/useStateWithCallback"
 
 interface ObsConfig {
     ip: string
@@ -13,11 +14,13 @@ interface ObsConfig {
 }
 
 const ConfigurationObs = () => {
-    const [form, setForm] = useState({
+    const [form, setForm] = useStateWithCallback({
         ip: "",
         port: "",
         password: "",
         name: ""
+    }, () => {
+        connect()
     })
 
     const [inputError, setErrors] = useState({
@@ -65,12 +68,12 @@ const ConfigurationObs = () => {
             <Title>Configuracion de OBS</Title>
             <form onSubmit={(e) => e.preventDefault()} className="grid  grid-cols-2">
                 <span className="flex flex-col items-center justify-self-end ">
-                    <Input type="text" label="Ip: " name="ip" className={error.ip !== '' && 'border-red-400 focus:border-red-600'} setValue={handleInputChange}/>
-                    {error.ip !== '' && <p className="text-red-500">{error.ip}</p>}
+                    <Input type="text" label="Ip: " name="ip" className={inputError.ip !== '' && 'border-red-400 focus:border-red-600'} setValue={handleInputChange}/>
+                    {inputError.ip !== '' && <p className="text-red-500">{inputError.ip}</p>}
                 </span>
                 <span className="flex flex-col items-center justify-self-end ">
-                    <Input type="text" label="Puerto: " className={error.port !== '' && 'border-red-400 focus:border-red-600'} name="port" setValue={handleInputChange}/>
-                    {error.port !== '' && <p className="text-red-500">{error.port}</p>}
+                    <Input type="text" label="Puerto: " className={inputError.port !== '' && 'border-red-400 focus:border-red-600'} name="port" setValue={handleInputChange}/>
+                    {inputError.port !== '' && <p className="text-red-500">{inputError.port}</p>}
                 </span>
                 <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
                 <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
@@ -82,12 +85,12 @@ const ConfigurationObs = () => {
                             return [...prev, form]
                         })
                     }}
-                     disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || error.ip !== '' || error.port !== '' || error.password !== '' || error.name !== ''}
+                     disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''}
                      type="submit" className={'w-fit  disabled:bg-slate-400 disabled:hover:disabled'}>Guardar</Button>
-                    <Button disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || error.ip !== '' || error.port !== '' || error.password !== '' || error.name !== ''} onClick={() => {
+                    <Button disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''} onClick={() => {
                         testConnect()
                     }} name="test" className="w-fit disabled:bg-slate-400 disabled:hover:disabled bg-slate-600">Probar conexión</Button>
-                    <Button onClick={() => connect()} disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || error.ip !== '' || error.port !== '' || error.password !== '' || error.name !== ''} name="connect" className="w-fit bg-slate-600">Conectar</Button>
+                    <Button onClick={() => connect()} disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''} name="connect" className="w-fit bg-slate-600">Conectar</Button>
                 </span>
             </form>
             {isSuccess && <span className="border bg-slate-500 text-green-500">
@@ -117,7 +120,9 @@ const ConfigurationObs = () => {
                                     })
                                 })
                             }}>Olvidar</Button>
-                            <Button onClick={() => connect()}>Conectar</Button>
+                            <Button onClick={() => {
+                                setForm(item)
+                            }}>Conectar</Button>
                         </div>
                     ))
                 }
