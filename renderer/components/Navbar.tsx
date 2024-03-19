@@ -12,7 +12,7 @@ const Navbar = () => {
         },
         {
             name: "Configuracion remota ",
-            path: "/configurationRemoteConfig"
+            path: "/remoteConfig"
         }
     ]
 
