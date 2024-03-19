@@ -1,6 +1,6 @@
 import OBSWebSocket from 'obs-websocket-js';
 import { useEffect, useState } from 'react';
-import { validateIpV4, validatePort } from './validations';
+import { validateIpV4, validatePort } from '../validations';
 
 const obs = new OBSWebSocket();
 
