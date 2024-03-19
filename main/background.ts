@@ -6,14 +6,14 @@ import Store from 'electron-store'
 
 export interface ObsConfig {
   ip: string
-  puerto: string
+  port: string
   password: string
   name: string
 }
 
 export interface WebSocketConfig {
   ip: string
-  puerto: string
+  port: string
   nick: string
 }
 
@@ -63,7 +63,7 @@ ipcMain.on('get-obs', (event) => {
 ipcMain.on('save-obs', (_event, arg) => {
   const configs = store.get('obs') || []
   //check for duplicated data
-  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.puerto === arg.puerto)
+  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
   if (index !== -1) {
     configs.splice(index, 1)
     store.set('obs', configs)
@@ -71,4 +71,13 @@ ipcMain.on('save-obs', (_event, arg) => {
   configs.push(arg)
   store.set('obs', configs)
 
+})
+
+ipcMain.on('del-obs', (_event, arg) => {
+  const configs = store.get('obs') || []
+  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
+  if (index !== -1) {
+    configs.splice(index, 1)
+    store.set('obs', configs)
+  }
 })
