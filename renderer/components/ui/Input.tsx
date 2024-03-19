@@ -11,7 +11,7 @@ const Input: React.FC<InputProps> = ({type, label, setValue, name, className, ..
             {label && <label className="">{label}</label>}
             <input
             {...props}
-            className={`bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 m-2 text-black ${className}`}
+            className={`${className} bg-gray-100 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 m-2 text-black `}
             type={type}
             name={name}
             onChange={setValue}
