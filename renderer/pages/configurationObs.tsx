@@ -25,9 +25,7 @@ const ConfigurationObs = () => {
     const onSubmit = (values: z.infer<typeof schema>) => {
         console.log(values)
     }
-    useEffect(() => {
-        console.log(form.formState.errors)
-    }, [form.formState])
+
     return (
         <Form {...form}>
             <Title>Configuracion de OBS Websocket</Title>
