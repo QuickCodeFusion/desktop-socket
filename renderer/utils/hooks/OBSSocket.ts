@@ -16,7 +16,14 @@ interface ConnectHookReturn {
     isError: boolean
     isSuccess: boolean
     isLoading: boolean
-    data: unknown
+    data: {
+        obsWebSocketVersion: string;
+        rpcVersion: number;
+        authentication?: {
+        challenge: string;
+        salt: string;
+    };
+    }
     connect: () => Promise<void>
     disconnect: () => void
     testConnect: () => Promise<void>
@@ -33,7 +40,7 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
     const [isError, setIsError] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState({});
+    const [data, setData] = useState({} as ConnectHookReturn['data']);
 
     const connectWebSocket = async () => {
         if (!validateIpV4(ip) || !validatePort(port)) {
@@ -50,6 +57,10 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
             setIsSuccess(true)
             setIsError(false)
             setIsLoading(false)
+            obs.on('Hello', (data) => {
+                setData(data)
+            })
+
         } catch (err) {
             setError(err.message)
             setIsError(true)

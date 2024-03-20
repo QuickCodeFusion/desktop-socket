@@ -3,6 +3,8 @@ import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import Store from 'electron-store'
+import { authenticationString } from './ipcEvents'
+import { passwordHash } from './utils'
 
 export interface ObsConfig {
   ip: string
@@ -80,4 +82,10 @@ ipcMain.on('del-obs', (_event, arg) => {
     configs.splice(index, 1)
     store.set('obs', configs)
   }
+})
+
+
+ipcMain.on(authenticationString, (_event, { salt, challenge, password }) => {
+  const hash = passwordHash(password, salt, challenge)
+  _event?.reply('authentication-response',hash)
 })

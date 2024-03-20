@@ -5,6 +5,7 @@ import { Title } from "../components/ui/Title"
 import { validateIpV4, validatePort } from "../utils/validations"
 import { useObs, useObsConnect } from "../utils/hooks/OBSSocket"
 import { useStateWithCallback } from "../utils/hooks/useStateWithCallback"
+import { authenticationString } from "@/../main/ipcEvents"
 
 interface ObsConfig {
     ip: string
@@ -38,6 +39,14 @@ const ConfigurationObs = () => {
         const { name, value } = event.target
         setForm({ ...form, [name]: value })
     }
+    const obs = useObs()
+
+    obs.on('Hello', (data) => {
+        console.log(data)
+    })
+
+    console.log(authenticationString)
+    
 
     useCallback(() => {
        if(form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== '') {
@@ -56,6 +65,19 @@ const ConfigurationObs = () => {
         })
         window.ipc.send("get-obs", {})
     }, [])
+    
+
+    useEffect(() => {
+        if(data?.authentication){
+            window.ipc.send(authenticationString, {salt: data?.authentication.salt, challenge: data.authentication?.challenge, password: form.password})
+            window.ipc.on("authentication-response", (data) => {
+               console.log(data);
+            })
+        }
+    },[data])
+
+    
+    
         
 
     useEffect(() => {
