@@ -17,12 +17,12 @@ const Navbar = () => {
     ]
 
     return(
-        <div className="w-screen grid grid-cols-3 p-2 bg-slate-800">
+        <div className="w-screen grid grid-cols-3 p-2 bg-obs-blue-500/55">
             <span className="flex justify-center gap-4 col-span-3">
                 {
                     items.map((item, index) => 
                         <Link className="place-self-center" href={item.path} key={index}>
-                            <Button className="w-fit">
+                            <Button className="w-fit bg-obs-blue-500">
                                 {item.name}
                             </Button>
                         </Link>
