@@ -2,6 +2,27 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
+import Store from 'electron-store'
+
+export interface ObsConfig {
+  ip: string
+  port: string
+  password: string
+  name: string
+}
+
+export interface WebSocketConfig {
+  ip: string
+  port: string
+  nick: string
+}
+
+interface StoreI {
+  obs: ObsConfig[]
+  websocket: WebSocketConfig[]
+}
+
+const store = new Store<any>()
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -35,6 +56,28 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-ipcMain.on('message', async (event, arg) => {
-  event.reply('message', `${arg} World!`)
+ipcMain.on('get-obs', (event) => {
+  event.reply('get-obs-config', store.get('obs') || [])
+})
+
+ipcMain.on('save-obs', (_event, arg) => {
+  const configs = store.get('obs') || []
+  //check for duplicated data
+  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
+  if (index !== -1) {
+    configs.splice(index, 1)
+    store.set('obs', configs)
+  }
+  configs.push(arg)
+  store.set('obs', configs)
+
+})
+
+ipcMain.on('del-obs', (_event, arg) => {
+  const configs = store.get('obs') || []
+  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
+  if (index !== -1) {
+    configs.splice(index, 1)
+    store.set('obs', configs)
+  }
 })
