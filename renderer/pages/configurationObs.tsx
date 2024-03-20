@@ -7,10 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 const schema = z.object({
-    ip: z.string().min(7).regex(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/, "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"),
+    ip: z.string().min(7).ip({version: "v4", message: "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"}),
     port: z.string().min(1).max(5).regex(/^\d{1,5}$/),
     password: z.string().min(1),
-    name: z.string().min(1)
+    name: z.string().min(1).trim()
 })
 const ConfigurationObs = () => {
     const form = useForm<z.infer<typeof schema>>({
