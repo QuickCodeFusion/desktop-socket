@@ -1,142 +1,92 @@
-import Input from "../components/ui/Input"
+import { Input } from "../components/ui/Input"
 import { useCallback, useEffect, useState } from "react"
 import Button from "../components/ui/Button"
-import { Title } from "../components/ui/Title"
-import { validateIpV4, validatePort } from "../utils/validations"
-import { useObs, useObsConnect } from "../utils/hooks/OBSSocket"
-import { useStateWithCallback } from "../utils/hooks/useStateWithCallback"
-
-interface ObsConfig {
-    ip: string
-    port: string
-    password: string
-    name: string
-}
-
+import { Title } from "@/components/ui/Title"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+const schema = z.object({
+    ip: z.string().min(7).regex(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/, "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"),
+    port: z.string().min(1).max(5).regex(/^\d{1,5}$/),
+    password: z.string().min(1),
+    name: z.string().min(1)
+})
 const ConfigurationObs = () => {
-    const [isValid, setIsValid] = useState(false)
-
-    const [form, setForm] = useStateWithCallback({
-        ip: "",
-        port: "",
-        password: "",
-        name: ""
-    }, () => {
-        connect()
-    })
-
-    const [inputError, setErrors] = useState({
-        ip: '',
-        port: '',
-        password: '',
-        name: ''
-    })
-
-    const { data, error, isLoading, isError, isSuccess, connect, disconnect, testConnect } = useObsConnect({rawIp: form.ip, rawPort: form.port, password: form.password, name: form.name})
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target
-        setForm({ ...form, [name]: value })
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            ip: "0.0.0.0",
+            port: "",
+            password: "",
+            name: ""
+        },
+      })
+    const onSubmit = (values: z.infer<typeof schema>) => {
+        console.log(values)
     }
-
-    useCallback(() => {
-       if(form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== '') {
-        setIsValid(true)
-       } else {
-        setIsValid(false)
-       }
-    },[form, inputError])
-
-
-    const [configs, setConfigs] = useState([])
-
     useEffect(() => {
-        window.ipc.on("get-obs-config", (data: ObsConfig[]) => {
-            setConfigs(data)
-        })
-        window.ipc.send("get-obs", {})
-    }, [])
-        
-
-    useEffect(() => {
-        const validateForm = () => {
-            const newInputError = {
-                ip: form.ip !== '' && !validateIpV4(form.ip) ? 'El formato de IP no es correcto' : '',
-                port: form.port !== '' && !validatePort(form.port) ? 'El puerto debe ser un número válido' : '',
-                password: '',
-                name: ''
-            };
-            setErrors(newInputError);
-        };
-
-        validateForm();
-    },[form])
-
-
+        console.log(form.formState.errors)
+    }, [form.formState])
     return (
-        <div className="flex gap-10 items-center flex-col p-4">
-            <Title>Configuracion de OBS</Title>
-            <form onSubmit={(e) => e.preventDefault()} className="grid  grid-cols-2">
-                <span className="flex flex-col items-center justify-self-end ">
-                    <Input type="text" label="Ip: " name="ip" className={inputError.ip !== '' && 'border-red-400 focus:border-red-600'} setValue={handleInputChange}/>
-                    {inputError.ip !== '' && <p className="text-red-500">{inputError.ip}</p>}
-                </span>
-                <span className="flex flex-col items-center justify-self-end ">
-                    <Input type="text" label="Puerto: " className={inputError.port !== '' && 'border-red-400 focus:border-red-600'} name="port" setValue={handleInputChange}/>
-                    {inputError.port !== '' && <p className="text-red-500">{inputError.port}</p>}
-                </span>
-                <Input type="password" label="Password: " name="password" setValue={handleInputChange}/>
-                <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
-                <span className="place-self-center col-span-2 m-10 flex gap-4 w-full justify-center">
-                    <Button name="save"
-                    onClick={() => {
-                        window.ipc.send("save-obs", form)
-                        setConfigs((prev) => {
-                            return [...prev, form]
-                        })
-                    }}
-                     disabled={isValid}
-                     type="submit" className={'w-fit  disabled:bg-slate-400 disabled:hover:disabled'}>Guardar</Button>
-                    <Button disabled={isValid} onClick={() => {
-                        testConnect()
-                    }} name="test" className="w-fit disabled:bg-slate-400 disabled:hover:disabled bg-slate-600">Probar conexión</Button>
-                    <Button onClick={() => connect()} disabled={isValid} name="connect" className="w-fit disabled:bg-slate-600 disabled:hover:none">Conectar</Button>
-                </span>
+        <Form {...form}>
+            <Title>Configuracion de OBS Websocket</Title>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2">
+                <FormField
+                control={form.control}
+                name='ip'
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Dirección IP</FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="shadcn" {...field}/>
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name='port'
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Puerto: </FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="shadcn" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl>
+                        <Input type="password" placeholder="********" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Nombre de sesión</FormLabel>
+                    <FormControl>
+                        <Input type="text" placeholder="Sesion" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <Button disabled={Object.keys(form.formState.errors).length > 0} className="disabled:bg-red-600" type="submit">Submit</Button>
             </form>
-            {isSuccess && <span className="border bg-slate-500 text-green-500">
-                <h1>Conectado</h1>
-                <Button onClick={() => disconnect()}>Ok</Button>
-                </span>}
-            {isError && <span className="border bg-slate-500 text-red-500">
-                <h1>{error}</h1>
-                <Button onClick={() => disconnect()}>Ok</Button>
-                </span>}
-                {
-                    configs && configs.map((item, index) => (
-                        <div key={index}>
-                            <p>Ip: {item.ip}</p>
-                            <p>Puerto: {item.port}</p>
-                            <p>Password: {item.password}</p>
-                            <p>Name: {item.name}</p>
-                            <Button onClick={() => {
-                                window.ipc.send("delete-obs", item)
-                                setConfigs((prev) => {
-                                    return prev.filter((oldItem) => {
-                                        if (oldItem.ip === item.ip && oldItem.port === item.port) {
-                                            disconnect()
-                                            return false
-                                        }
-                                        return true
-                                    })
-                                })
-                            }}>Olvidar</Button>
-                            <Button onClick={() => {
-                                setForm(item)
-                            }}>Conectar</Button>
-                        </div>
-                    ))
-                }
-        </div>        
+        </Form>
     )
 }
 
