@@ -1,11 +1,13 @@
 import Input from "../components/ui/Input"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Button from "../components/ui/Button"
 import { Title } from "../components/ui/Title"
 import { validateIpV4, validatePort } from "../utils/validations"
 import { useObs } from "../utils/OBSSocket"
 
 const ConfigurationObs = () => {
+    const [isValid, setIsValid] = useState(false)
+
     const [form, setForm] = useState({
         ip: "",
         puerto: "",
@@ -30,6 +32,14 @@ const ConfigurationObs = () => {
         const { name, value } = event.target
         setForm({ ...form, [name]: value })
     }
+
+    useCallback(() => {
+       if(form.ip !== '' && form.puerto !== '' && form.password !== '' && form.name !== '' && error.ip === '' && error.puerto === '' && error.password === '' && error.name === '') {
+        setIsValid(true)
+       } else {
+        setIsValid(false)
+       }
+    },[form, error])
     
 
     useEffect(() => {
@@ -46,7 +56,6 @@ const ConfigurationObs = () => {
         validateForm();
     },[form])
 
-    console.log(error);
 
     return (
         <div className="flex gap-10 items-center flex-col p-4">
@@ -64,9 +73,9 @@ const ConfigurationObs = () => {
                 <Input type="text"  label="Nombre de sesion: " name="name" setValue={handleInputChange}/>
                 <span className="place-self-center col-span-2 m-10 flex gap-4 w-full justify-center">
                     <Button name="save"
-                     disabled={form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || error.ip !== '' || error.puerto !== '' || error.password !== '' || error.name !== ''}
+                     disabled={isValid}
                      type="submit" className={'w-fit  disabled:bg-slate-400 disabled:hover:disabled'}>Guardar</Button>
-                    <Button disabled={form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || error.ip !== '' || error.puerto !== '' || error.password !== '' || error.name !== ''} onClick={() => {
+                    <Button disabled={isValid} onClick={() => {
                         obs.connect(`ws://${form.ip}:${form.puerto}`, form.password)
                         .then(() => {
                             console.log("conectado")
