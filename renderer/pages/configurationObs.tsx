@@ -40,12 +40,13 @@ const ConfigurationObs = () => {
     }
 
     useCallback(() => {
-       if(form.ip !== '' && form.puerto !== '' && form.password !== '' && form.name !== '' && error.ip === '' && error.puerto === '' && error.password === '' && error.name === '') {
+       if(form.ip === '' || form.puerto === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== '') {
         setIsValid(true)
        } else {
         setIsValid(false)
        }
-    },[form, error])
+    },[form, inputError])
+
 
     const [configs, setConfigs] = useState([])
 
@@ -94,12 +95,12 @@ const ConfigurationObs = () => {
                             return [...prev, form]
                         })
                     }}
-                     disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''}
+                     disabled={isValid}
                      type="submit" className={'w-fit  disabled:bg-slate-400 disabled:hover:disabled'}>Guardar</Button>
-                    <Button disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''} onClick={() => {
+                    <Button disabled={isValid} onClick={() => {
                         testConnect()
                     }} name="test" className="w-fit disabled:bg-slate-400 disabled:hover:disabled bg-slate-600">Probar conexión</Button>
-                    <Button onClick={() => connect()} disabled={form.ip === '' || form.port === '' || form.password === '' || form.name === '' || inputError.ip !== '' || inputError.port !== '' || inputError.password !== '' || inputError.name !== ''} name="connect" className="w-fit bg-slate-600">Conectar</Button>
+                    <Button onClick={() => connect()} disabled={isValid} name="connect" className="w-fit disabled:bg-slate-600 disabled:hover:none">Conectar</Button>
                 </span>
             </form>
             {isSuccess && <span className="border bg-slate-500 text-green-500">
