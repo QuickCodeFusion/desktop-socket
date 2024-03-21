@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import ConfirmationModal from "@/components/ConfirmationModal"
 const schema = z.object({
     ip: z.string().min(7).ip({version: "v4", message: "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"}),
     port: z.string().min(1).max(5).regex(/^\d{1,5}$/),
@@ -13,6 +14,12 @@ const schema = z.object({
     name: z.string().min(1).trim()
 })
 const ConfigurationObs = () => {
+    const [modal, setModal] = useState({
+        conectar: false,
+        guardar: false,
+        probarConexion: false
+    })
+
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -90,6 +97,7 @@ const ConfigurationObs = () => {
                     </span>
                 </form>
             </div>
+            <ConfirmationModal isOpen={modal.probarConexion} title={"Probar la conección"} description={"¿Desea probar la conección?"} isOpen={modal.probarConexion} onCancel={() => setModal({ ...modal, probarConexion: false })} onConfirm={() => setModal({ ...modal, probarConexion: false })}/>
         </Form>
     )
 }
