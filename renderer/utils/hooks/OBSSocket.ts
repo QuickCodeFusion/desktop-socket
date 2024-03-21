@@ -1,4 +1,4 @@
-import OBSWebSocket from 'obs-websocket-js';
+import OBSWebSocket, { EventSubscription } from 'obs-websocket-js';
 import { useEffect, useState } from 'react';
 import { validateIpV4, validatePort } from '../validations';
 
@@ -17,12 +17,13 @@ interface ConnectHookReturn {
     isSuccess: boolean
     isLoading: boolean
     data: {
-        obsWebSocketVersion: string;
-        rpcVersion: number;
+        obsWebSocketVersion?: string;
+        rpcVersion?: number;
         authentication?: {
-        challenge: string;
-        salt: string;
-    };
+            challenge: string;
+            salt: string;
+        };
+        negotiatedRpcVersion?: number;
     }
     connect: () => Promise<void>
     disconnect: () => void
@@ -54,13 +55,10 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
 
         try {
             await obs.connect(`ws://${ip}:${port}`, password)
+            .then(data => setData(data))
             setIsSuccess(true)
             setIsError(false)
             setIsLoading(false)
-            obs.on('Hello', (data) => {
-                setData(data)
-            })
-
         } catch (err) {
             setError(err.message)
             setIsError(true)
@@ -77,15 +75,18 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
     const testConnectionBeforeConnect = async () => {
         try {
             await obs.connect(`ws://${ip}:${port}`, password)
+            .then(data => setData(data))
             setIsSuccess(true)
             setIsError(false)
-            await obs.disconnect()
         } catch (err) {
             setError(err.message)
             setIsError(true)
         }
     };
 
+    useEffect(() => {
+        console.log(rawIp, rawPort, password, name)
+    }, [rawIp, rawPort, password, name])
     return {
         error,
         isError,
@@ -102,6 +103,7 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
 export const useObsStatus = () => {
     const [isConnected, setIsConnected] = useState(false)
     const [isDisconnected, setIsDisconnected] = useState(false)
+    const [authentication, setAuthentication] = useState({} as ConnectHookReturn['data']['authentication'])
 
     obs.on('ConnectionOpened', () => {
         setIsConnected(true)
@@ -113,5 +115,9 @@ export const useObsStatus = () => {
         setIsConnected(false)
     })
 
-    return { isConnected, isDisconnected }
+    obs.on('Hello', (data) => {
+        setAuthentication(data.authentication)
+    })
+
+    return { isConnected, isDisconnected, authentication }
 }

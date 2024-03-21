@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { delObs, getObs, saveObs } from "@/../main/ipcEvents"
-import { ObsConfig } from "@/../main/interfaces";
+import { authenticationString, delObs, getObs, saveObs } from "@/../main/ipcEvents"
+import { type ObsConfig } from "@/../main/interfaces";
 
 export const useObsConfigs = () => {
     const [obsConfigs, setObsConfig] = useState<ObsConfig[]>([])
