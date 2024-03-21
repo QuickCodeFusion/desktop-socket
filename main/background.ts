@@ -3,28 +3,12 @@ import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import Store from 'electron-store'
-import { authenticationString } from './ipcEvents'
+import { authenticationString, delObs, getObs, saveObs } from './ipcEvents'
 import { passwordHash } from './utils'
+import { delConfig, getConfigs, saveConfig } from './handlers/obsConfig'
+import { ObsConfig, StoreI } from './interfaces'
 
-export interface ObsConfig {
-  ip: string
-  port: string
-  password: string
-  name: string
-}
-
-export interface WebSocketConfig {
-  ip: string
-  port: string
-  nick: string
-}
-
-interface StoreI {
-  obs: ObsConfig[]
-  websocket: WebSocketConfig[]
-}
-
-const store = new Store<any>()
+export const store = new Store<StoreI>()
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -34,7 +18,7 @@ if (isProd) {
   app.setPath('userData', `${app.getPath('userData')} (development)`)
 }
 
-;(async () => {
+(async () => {
   await app.whenReady()
 
   const mainWindow = createWindow('main', {
@@ -58,32 +42,11 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-ipcMain.on('get-obs', (event) => {
-  event.reply('get-obs-config', store.get('obs') || [])
-})
+ipcMain.on(getObs, (event) => getConfigs(event))
 
-ipcMain.on('save-obs', (_event, arg) => {
-  const configs = store.get('obs') || []
-  //check for duplicated data
-  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
-  if (index !== -1) {
-    configs.splice(index, 1)
-    store.set('obs', configs)
-  }
-  configs.push(arg)
-  store.set('obs', configs)
+ipcMain.on(saveObs, (_event, payload: ObsConfig) => saveConfig(payload))
 
-})
-
-ipcMain.on('del-obs', (_event, arg) => {
-  const configs = store.get('obs') || []
-  const index = configs.findIndex((config: ObsConfig) => config.ip === arg.ip && config.port === arg.port)
-  if (index !== -1) {
-    configs.splice(index, 1)
-    store.set('obs', configs)
-  }
-})
-
+ipcMain.on(delObs, (_event, payload: ObsConfig) => delConfig(payload))
 
 ipcMain.on(authenticationString, (_event, { salt, challenge, password }) => {
   const hash = passwordHash(password, salt, challenge)
