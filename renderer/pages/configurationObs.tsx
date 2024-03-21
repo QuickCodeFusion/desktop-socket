@@ -9,6 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useObsConfigs } from "@/utils/hooks/useObsConfig"
 import { useObsConnect, useObsStatus } from "@/utils/hooks/OBSSocket"
 import { type ObsConfig } from "@/../main/interfaces";
+import ConfirmationModal from "@/components/ConfirmationModal"
 
 const schema = z.object({
     ip: z.string({description: "La IP contiene caracteres no validos"}).ip({version: "v4", message: "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"}),
@@ -19,6 +20,12 @@ const schema = z.object({
 const ConfigurationObs = () => {
     const { saveConfig, deleteConfig, obsConfigs } = useObsConfigs()
     const { isConnected } = useObsStatus()
+    const [modal, setModal] = useState({
+        conectar: false,
+        guardar: false,
+        probarConexion: false
+    })
+
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -113,6 +120,7 @@ const ConfigurationObs = () => {
                         <Button onClick={form.handleSubmit((values) => connect())} disabled={!form.formState.isValid}>Conectar</Button>
                     </span>
             </div>
+            <ConfirmationModal isOpen={modal.probarConexion} title={"Probar la conección"} description={"¿Desea probar la conección?"} isOpen={modal.probarConexion} onCancel={() => setModal({ ...modal, probarConexion: false })} onConfirm={() => setModal({ ...modal, probarConexion: false })}/>
         </Form>
     )
 }
