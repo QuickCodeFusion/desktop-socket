@@ -42,6 +42,7 @@ const ConfigurationObs = () => {
         console.log(values, form.formState.isDirty, form.formState.isValid)
     }
 
+
     useEffect(() => {
         if (!obsConfigs.length) return
         const lastConfig = obsConfigs[obsConfigs.length - 1]
@@ -51,6 +52,11 @@ const ConfigurationObs = () => {
         form.setValue("name", lastConfig.name)
     }, [obsConfigs])
 
+    useEffect(() => {
+        if(isError){
+            alert(error)
+        }
+    },[error, isError])
     return (
         <Form {...form}>
             <div className="flex flex-col m-10 items-center">
@@ -110,17 +116,30 @@ const ConfigurationObs = () => {
                     />
                 </form>
                     <span className="grid grid-cols-3 gap-2 p-4 col-span-2">
-                        <Button onClick={form.handleSubmit((values: ObsConfig) => {
-                            if (values === form.formState.defaultValues) return
-                            if (!form.formState.isValid) return
-                            console.log('Is being saved')
-                            saveConfig(values)
-                        })} disabled={!form.formState.isValid || !isConnected}>Guardar</Button>
-                        <Button onClick={form.handleSubmit((values) => testConnect())} disabled={!form.formState.isValid}>Probar conexión</Button>
-                        <Button onClick={form.handleSubmit((values) => connect())} disabled={!form.formState.isValid}>Conectar</Button>
+                        <Button onClick={form.handleSubmit(() => setModal({ ...modal, guardar: true }))} disabled={!form.formState.isValid || !isConnected}>Guardar</Button>
+                        <Button onClick={form.handleSubmit((values) => {testConnect()
+                        setModal({ ...modal, probarConexion: true })})} disabled={!form.formState.isValid}>Probar conexión</Button>
+                        <Button onClick={form.handleSubmit((values) => setModal({ ...modal, conectar: true }))} disabled={!form.formState.isValid}>Conectar</Button>
                     </span>
             </div>
-            <ConfirmationModal isOpen={modal.probarConexion} title={"Probar la conección"} description={"¿Desea probar la conección?"} isOpen={modal.probarConexion} onCancel={() => setModal({ ...modal, probarConexion: false })} onConfirm={() => setModal({ ...modal, probarConexion: false })}/>
+            <ConfirmationModal isOpen={modal.probarConexion} title={"Resultados de la conexión"} description={`Ip: ${form.getValues().ip} \nPuerto: ${form.getValues().port} \nNombre de sesión: ${form.getValues().name}`} onCancel={() => {
+                disconnect()
+                setModal({ ...modal, probarConexion: false })}}
+                onConfirm={() => {
+                disconnect()
+                setModal({ ...modal, probarConexion: false })}}/>
+
+            <ConfirmationModal
+             isOpen={modal.conectar} title={`¿Desea conectarse a ${form.getValues().ip}?`} description={`La aplicacion tendra acceso total a su servidor de OBS Websocket en el puerto: ${form.getValues().port}`} onCancel={() => setModal({ ...modal, conectar: false })}
+             onConfirm={() => {setModal({ ...modal, conectar: false });
+             connect()}}/>
+
+            <ConfirmationModal isOpen={modal.guardar} title={`¿Desea guardar la configuración de este servidor de OBS Websocket?`} description={`Ip: ${form.getValues().ip} \nPuerto: ${form.getValues().port} \nNombre de sesión: ${form.getValues().name}`} onCancel={() => setModal({ ...modal, guardar: false })} onConfirm={form.handleSubmit((values: ObsConfig) => {
+                            if (values === form.formState.defaultValues) return
+                            if (!form.formState.isValid) return
+                            saveConfig(values)
+                            setModal({ ...modal, guardar: false })
+                        })}/>
         </Form>
     )
 }

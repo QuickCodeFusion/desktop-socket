@@ -13,6 +13,10 @@ const Navbar = () => {
         {
             name: "Configuracion remota ",
             path: "/remoteConfig"
+        },
+        {
+            name: "Conexiones a OBS",
+            path: "/conexionesObs"
         }
     ]
 
