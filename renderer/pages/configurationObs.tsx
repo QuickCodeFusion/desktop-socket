@@ -37,7 +37,7 @@ const ConfigurationObs = () => {
         mode: "all"
       })
 
-    const { connect, error, isError, isSuccess, isLoading, testConnect, disconnect } = useObsConnect({ rawIp: form.getValues().ip, rawPort: form.getValues().port, password: form.getValues().password, name: form.getValues().name })
+    const { connect, error, isError, isSuccess, isLoading, testConnect, disconnect, data } = useObsConnect({ rawIp: form.getValues().ip, rawPort: form.getValues().port, password: form.getValues().password, name: form.getValues().name })
     const onSubmit = (values: z.infer<typeof schema>, event: SyntheticEvent) => {
         console.log(values, form.formState.isDirty, form.formState.isValid)
     }
@@ -122,24 +122,42 @@ const ConfigurationObs = () => {
                         <Button onClick={form.handleSubmit((values) => setModal({ ...modal, conectar: true }))} disabled={!form.formState.isValid}>Conectar</Button>
                     </span>
             </div>
-            <ConfirmationModal isOpen={modal.probarConexion} title={"Resultados de la conexión"} description={`Ip: ${form.getValues().ip} \nPuerto: ${form.getValues().port} \nNombre de sesión: ${form.getValues().name}`} onCancel={() => {
+            <ConfirmationModal isOpen={modal.probarConexion} title={"Resultados de la conexión"} onCancel={() => {
                 disconnect()
                 setModal({ ...modal, probarConexion: false })}}
                 onConfirm={() => {
                 disconnect()
-                setModal({ ...modal, probarConexion: false })}}/>
+                setModal({ ...modal, probarConexion: false })}}>
+                    {isSuccess 
+                    ? <h1>Conexión exitosa: </h1>
+                    : <h1>No se pudo conectar. Verifique la configuración.</h1>}
+                    <span>
+                        <p>Ip: {form.getValues().ip}</p>
+                        <p>Puerto: {form.getValues().port}</p>
+                        <p>Contraseña: {form.getValues().password}</p>
+                        <p>Nombre de sesión: {form.getValues().name}</p>
+                    </span>
+                    <p>Errores: {error ? error : "Sin errores"}</p>
+                    <p>Status: {isSuccess ? "Conectado" : "Desconectado"}</p>
+                    <span>Detalles de la conexión: {JSON.stringify(data)}</span>
+                </ConfirmationModal>
 
             <ConfirmationModal
-             isOpen={modal.conectar} title={`¿Desea conectarse a ${form.getValues().ip}?`} description={`La aplicacion tendra acceso total a su servidor de OBS Websocket en el puerto: ${form.getValues().port}`} onCancel={() => setModal({ ...modal, conectar: false })}
+             isOpen={modal.conectar} title={`¿Desea conectarse a ${form.getValues().ip}?`} onCancel={() => setModal({ ...modal, conectar: false })}
              onConfirm={() => {setModal({ ...modal, conectar: false });
-             connect()}}/>
+             connect()}}>
+                <p>Está a punto de conectarse al servidor {form.getValues().ip}, puerto {form.getValues().port} y la aplicación tendrá acceso total al mismo</p>
+            </ConfirmationModal>
 
-            <ConfirmationModal isOpen={modal.guardar} title={`¿Desea guardar la configuración de este servidor de OBS Websocket?`} description={`Ip: ${form.getValues().ip} \nPuerto: ${form.getValues().port} \nNombre de sesión: ${form.getValues().name}`} onCancel={() => setModal({ ...modal, guardar: false })} onConfirm={form.handleSubmit((values: ObsConfig) => {
+            <ConfirmationModal isOpen={modal.guardar} title={`¿Desea guardar la configuración de este servidor de OBS Websocket?`} onConfirm={form.handleSubmit((values: ObsConfig) => {
                             if (values === form.formState.defaultValues) return
                             if (!form.formState.isValid) return
                             saveConfig(values)
                             setModal({ ...modal, guardar: false })
-                        })}/>
+                        })}
+                        onCancel={() => setModal({ ...modal, guardar: false })}>
+                <p>Está a punto de guardar la configuración del servidor {form.getValues().ip}, puerto {form.getValues().port}, nombrado como {form.getValues().name}</p>
+            </ConfirmationModal>
         </Form>
     )
 }
