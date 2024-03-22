@@ -85,13 +85,38 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
             setIsSuccess(true)
             setIsError(false)
         } catch (err) {
-            if(err.code === 1006){
-                setIsError(true)
-                setError('No se pudo conectar con el servidor. Por favor, compruebe que el servidor este activo y que la IP y el puerto sean correctos o esta intentando conectarse a un servidor con IP y puerto de red (LAN)')
-                return
+            switch (err.code) {
+                case 1006:
+                    setError('No se pudo conectar con el servidor. Por favor, compruebe que el servidor este activo y que la IP y el puerto sean correctos o esta intentando conectarse a un servidor con IP y puerto de red (LAN)')
+                    break;
+                case 4000:
+                    setError('Error desconocido (4000). Contacte con los desarrolladores')
+                    break;
+                case 4003:
+                    setError('Faltan datos. Por favor, llene todos los campos')
+                    break;
+                case 4004:
+                    setError('La IP o el puerto no son validos. Por favor, compruebe que la IP y el puerto sean correctos')
+                    break;
+                case 4005:
+                    setError('La IP o el puerto no son validos. Por favor, compruebe que la IP y el puerto sean correctos')
+                    break;
+                case 4008:
+                    setError('Ya esta conectado. Por favor, desconecte antes de intentar conectarse de nuevo')
+                    break;
+                case 4009:
+                    setError('Autenticación fallida. Por favor, compruebe la contraseña')
+                    break;
+                case 4010:
+                    setError('Versión de protocolo RPC incompatible. Verifique la versión RPC de su servidor OBS Websocket o contacte con los desarrolladores')
+                    break;
+                case 4011:
+                    setError('La sesión websocket ha sido invalidada por el servidor. Probablemente ha sido expulsado del servidor. Caso contrario, por favor contacte con los desarrolladores')
+                    break;
+                default:
+                    setError(`Error desconocido (${err.code}: ${err.message}). Contacte con los desarrolladores`)
+                    break;
             }
-            setError(err.message)
-            setIsError(true)
         }
     };
 
