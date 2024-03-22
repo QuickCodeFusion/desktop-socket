@@ -85,6 +85,11 @@ export const useObsConnect = ({ rawIp, rawPort, password, name }: ObsConfig): Co
             setIsSuccess(true)
             setIsError(false)
         } catch (err) {
+            if(err.code === 1006){
+                setIsError(true)
+                setError('No se pudo conectar con el servidor. Por favor, compruebe que el servidor este activo y que la IP y el puerto sean correctos o esta intentando conectarse a un servidor con IP y puerto de red (LAN)')
+                return
+            }
             setError(err.message)
             setIsError(true)
         }
