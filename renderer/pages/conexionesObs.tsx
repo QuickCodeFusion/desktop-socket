@@ -12,7 +12,7 @@ const conexionesObs = () => {
             <div className="grid grid-cols-4 p-4">
                 {
                     obsConfigs.map((config, index) =>
-                        <div key={index} className="flex flex-col border p-4 gap-2 w-fit border-obs-blue-500">
+                        <div key={index} className="flex flex-col border p-4 gap-2 w-fit border-obs-blue-500 bg-obs-blue-400/20 rounded-md">
                             <p>Nombre: {config.name}</p>
                             <p>IP: {config.ip}</p>
                             <p>Puerto: {config.port}</p>
