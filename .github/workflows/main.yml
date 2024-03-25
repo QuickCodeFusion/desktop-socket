@@ -19,21 +19,13 @@ jobs:
     - name: Build Electron app for Linux
       run: npm run build:linux
 
-    - name: Find AppImage for Linux
-      id: find-appimage-linux
-      run: |
-        find ./dist -type f -name '*.AppImage' -print -quit | while read -r appimage; do
-          echo "::set-output name=appimage_path::${appimage}"
-          echo "::set-output name=appimage_name::$(basename "${appimage}")"
-        done
-
     - name: Upload Linux Release
       uses: actions/upload-release-asset@v1
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ${{ steps.find-appimage-linux.outputs.appimage_path }}
+        asset_path: './dist/My Nextron App-1.0.0.AppImage'
         asset_name: obs-remote-linux.zip
         asset_content_type: application/zip
 
@@ -52,6 +44,8 @@ jobs:
 
     - name: Upload Windows Release
       uses: actions/upload-release-asset@v1
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.repository.releases_url }}
         asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
@@ -73,6 +67,8 @@ jobs:
 
     - name: Upload Windows Release (32-bit)
       uses: actions/upload-release-asset@v1
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.repository.releases_url }}
         asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
