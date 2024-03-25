@@ -54,7 +54,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ./dist
+        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
         asset_name: obs-remote-windows.zip
         asset_content_type: application/zip
         
@@ -75,6 +75,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ./dist
+        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
         asset_name: obs-remote-windowsx86.zip
         asset_content_type: application/zip
