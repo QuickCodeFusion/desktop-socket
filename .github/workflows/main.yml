@@ -20,9 +20,10 @@ jobs:
     - name: Install dependencies
       run: npm install
     
-    - name: Get Version Number
-      run: echo "VERSION=(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
-
+    - name: Get version number
+      uses: krstphrrr/package-json-version-reader@v1.0.0
+      id: version
+  
     - name: Build Electron app
       run: npm run build:${{ matrix.os }}
 
@@ -31,7 +32,7 @@ jobs:
       if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'windows-latest')  
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_name: ${{ github.workspace }}/dist/My Nextron App-${{ env.VERSION }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
+        asset_name: ${{ github.workspace }}/dist/My Nextron App-${{ steps.version.outputs.version }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
         asset_content_type: "application/zip"
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
