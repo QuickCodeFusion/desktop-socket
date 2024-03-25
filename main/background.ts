@@ -2,6 +2,13 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
+import Store from 'electron-store'
+import { authenticationString, delObs, getObs, saveObs } from './ipcEvents'
+import { passwordHash } from './utils'
+import { delConfig, getConfigs, saveConfig } from './handlers/obsConfig'
+import { ObsConfig, StoreI } from './interfaces'
+
+export const store = new Store<StoreI>()
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -11,7 +18,7 @@ if (isProd) {
   app.setPath('userData', `${app.getPath('userData')} (development)`)
 }
 
-;(async () => {
+(async () => {
   await app.whenReady()
 
   const mainWindow = createWindow('main', {
@@ -35,6 +42,13 @@ app.on('window-all-closed', () => {
   app.quit()
 })
 
-ipcMain.on('message', async (event, arg) => {
-  event.reply('message', `${arg} World!`)
+ipcMain.on(getObs, (event) => getConfigs(event))
+
+ipcMain.on(saveObs, (_event, payload: ObsConfig) => saveConfig(payload))
+
+ipcMain.on(delObs, (_event, payload: ObsConfig) => delConfig(payload))
+
+ipcMain.on(authenticationString, (_event, { salt, challenge, password }) => {
+  const hash = passwordHash(password, salt, challenge)
+  _event?.reply('authentication-response',hash)
 })

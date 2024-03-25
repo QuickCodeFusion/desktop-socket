@@ -8,11 +8,27 @@
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "build:linux": "nextron build --linux",
+    "build:win32": "nextron build --win --ia32",
+    "build:win64": "nextron build --win --x64"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "electron-serve": "^1.3.0",
-    "electron-store": "^8.1.0"
+    "electron-store": "^8.2.0",
+    "lucide-react": "^0.359.0",
+    "obs-websocket-js": "^5.0.5",
+    "react-hook-form": "^7.51.1",
+    "tailwind-merge": "^2.2.2",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
@@ -27,5 +43,10 @@
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
+  },
+  "repository": {
+    "directory": "my-nextron-app",
+    "url": "https://github.com/QuickCodeFusion/desktop-socket.git",
+    "type": "github"
   }
 }
