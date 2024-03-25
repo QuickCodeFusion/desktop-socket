@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Button from "./ui/Button"
+import { useObsStatus } from "@/utils/hooks/OBSSocket"
 
 const Navbar = () => {
     const items = [{
@@ -8,11 +9,13 @@ const Navbar = () => {
         },
         {
             name: "Configuracion de OBS",
-            path: "/configurationObs"
+            path: "/configurationObs",
+            activeObs: true
         },
         {
-            name: "Configuracion remota ",
-            path: "/remoteConfig"
+            name: "Configuracion remota",
+            path: "/remoteConfig",
+            activeRemote: true
         },
         {
             name: "Conexiones a OBS",
@@ -20,19 +23,29 @@ const Navbar = () => {
         }
     ]
 
+    const { isConnected } = useObsStatus()
+
     return(
-        <div className="w-screen grid grid-cols-3 p-2 bg-obs-blue-500/55">
+        <div className="w-screen grid grid-cols-3 place-items-center center p-2 bg-obs-blue-500/55">
             <span className="flex justify-center gap-4 col-span-3">
                 {
                     items.map((item, index) => 
-                        <Link className="place-self-center" href={item.path} key={index}>
-                            <Button className="w-fit bg-obs-blue-500">
+                            <Button key={index} className="w-fit bg-obs-blue-500 flex gap-2 items-center">
+                                <Link className="place-self-center" href={item.path} >
                                 {item.name}
+                                </Link>
+                                { item.activeObs && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
+                                { item.activeRemote && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
                             </Button>
-                        </Link>
                     )
                 }
             </span>
+            {/* <span className="flex items-center gap-2 place-self-start rounded-sm p-2 bg-obs-blue-500/55 ">
+                <p className="text-center">
+                    {isConnected ? "Conectado" : "Desconectado"}
+                </p>
+                <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>
+            </span> */}
         </div>
     )
 }
