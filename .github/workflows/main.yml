@@ -7,7 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, windows-latest-x86]
 
     steps:
     - name: Checkout code
@@ -16,61 +20,15 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build Electron app for Linux
-      run: npm run build:linux
+    - name: Build Electron app
+      run: npm run build:${{ matrix.os }}
 
-    - name: Upload Linux Release
+    - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'windows-latest')  
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: './dist/My Nextron App-1.0.0.AppImage'
-        asset_name: obs-remote-linux.zip
-        asset_content_type: application/zip
-
-  build-windows:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build Electron app for Windows
-      run: npm run build:win64
-
-    - name: Upload Windows Release
-      uses: actions/upload-release-asset@v1
+        asset_name: ${{ github.workspace }}/dist/My Nextron App-${{ github.run_number }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
+        asset_content_type: "application/zip"
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
-        asset_name: obs-remote-windows.zip
-        asset_content_type: application/zip
-        
-  build-windows32:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build Electron app for Windows (32-bit)
-      run: npm run build:win32
-
-    - name: Upload Windows Release (32-bit)
-      uses: actions/upload-release-asset@v1
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
-        asset_name: obs-remote-windowsx86.zip
-        asset_content_type: application/zip
