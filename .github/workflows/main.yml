@@ -27,6 +27,20 @@ jobs:
     - name: Build Electron app
       run: npm run build:${{ matrix.os }}
 
+    - name: Create Release
+      id: create_release
+      if: github.event_name == 'push' && !contains(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
+        body: |
+          Release ${{ steps.version.outputs.version }}
+        draft: false
+        prerelease: false
+
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'windows-latest')  
