@@ -32,7 +32,8 @@ jobs:
       if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'windows-latest')  
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_name: ${{ github.workspace }}/dist/My Nextron App-${{ steps.version.outputs.version }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
+        asset_path: ${{ github.workspace }}/dist/My Nextron App-${{ steps.version.outputs.version }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
+        asset_name: My Nextron App-${{ steps.version.outputs.version }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
         asset_content_type: "application/zip"
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
