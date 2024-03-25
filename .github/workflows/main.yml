@@ -1,0 +1,70 @@
+name: Electron App Packaging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Electron app for Linux
+      run: npm run build:linux
+
+    - name: Upload Linux Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.repository.releases_url }}
+        asset_path: ./dist
+        asset_name: obs-remote-linux.zip
+        asset_content_type: application/zip
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Electron app for Windows
+      run: npm run build:win64
+
+    - name: Upload Windows Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.repository.releases_url }}
+        asset_path: ./dist
+        asset_name: obs-remote-windows.zip
+        asset_content_type: application/zip
+        
+  build-windows32:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build Electron app for Windows (32-bit)
+      run: npm run build:win32
+
+    - name: Upload Windows Release (32-bit)
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.repository.releases_url }}
+        asset_path: ./dist
+        asset_name: obs-remote-windowsx86.zip
+        asset_content_type: application/zip
