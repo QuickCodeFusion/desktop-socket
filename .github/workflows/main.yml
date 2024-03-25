@@ -36,6 +36,7 @@ jobs:
         asset_path: ${{ steps.find-appimage-linux.outputs.appimage_path }}
         asset_name: obs-remote-linux.zip
         asset_content_type: application/zip
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
     runs-on: windows-latest
