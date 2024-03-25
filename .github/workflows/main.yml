@@ -32,7 +32,7 @@ jobs:
       if: github.event_name == 'push' && !contains(github.ref, 'refs/tags/')
       uses: actions/create-release@v1
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         tag_name: v${{ steps.version.outputs.version }}
         release_name: Release ${{ steps.version.outputs.version }}
@@ -50,4 +50,4 @@ jobs:
         asset_name: My Nextron App-${{ steps.version.outputs.version }}${{ matrix.os == 'ubuntu-latest' && '.AppImage' || '.exe' }}
         asset_content_type: "application/zip"
       env: 
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
