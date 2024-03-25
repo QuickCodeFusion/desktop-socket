@@ -1,5 +1,7 @@
 name: Electron App Packaging
 
+permissions: write-all
+
 on:
   push:
     branches:
