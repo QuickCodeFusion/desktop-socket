@@ -18,22 +18,19 @@ jobs:
 
     - name: Build Electron app for Linux
       run: npm run build:linux
-<<<<<<< HEAD
-=======
-    - name: Find Executable for Linux
-      id: find-executable-linux
-      run: echo "::set-output name=executable::$(find ./dist -type f -executable | head -n 1)"
->>>>>>> 1084b3922b34685af1f048bb72df93c84f652640
+    - name: Find AppImage for Linux
+      id: find-appimage-linux
+      run: |
+        find ./path/to/linux/dist -type f -name '*.AppImage' -print -quit | while read -r appimage; do
+          echo "::set-output name=appimage_path::${appimage}"
+          echo "::set-output name=appimage_name::$(basename "${appimage}")"
+        done
 
     - name: Upload Linux Release
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-<<<<<<< HEAD
-        asset_path: ./dist
-=======
-        asset_path: ${{ steps.find-executable-linux.outputs.executable }}
->>>>>>> 1084b3922b34685af1f048bb72df93c84f652640
+        asset_path: ${{ steps.find-appimage-linux.outputs.appimage_path }}
         asset_name: obs-remote-linux.zip
         asset_content_type: application/zip
 
