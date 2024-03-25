@@ -18,12 +18,15 @@ jobs:
 
     - name: Build Electron app for Linux
       run: npm run build:linux
+    - name: Find Executable for Linux
+      id: find-executable-linux
+      run: echo "::set-output name=executable::$(find ./dist -type f -executable | head -n 1)"
 
     - name: Upload Linux Release
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ./dist
+        asset_path: ${{ steps.find-executable-linux.outputs.executable }}
         asset_name: obs-remote-linux.zip
         asset_content_type: application/zip
 
