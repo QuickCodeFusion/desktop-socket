@@ -18,15 +18,22 @@ jobs:
 
     - name: Build Electron app for Linux
       run: npm run build:linux
+<<<<<<< HEAD
+=======
     - name: Find Executable for Linux
       id: find-executable-linux
       run: echo "::set-output name=executable::$(find ./dist -type f -executable | head -n 1)"
+>>>>>>> 1084b3922b34685af1f048bb72df93c84f652640
 
     - name: Upload Linux Release
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
+<<<<<<< HEAD
+        asset_path: ./dist
+=======
         asset_path: ${{ steps.find-executable-linux.outputs.executable }}
+>>>>>>> 1084b3922b34685af1f048bb72df93c84f652640
         asset_name: obs-remote-linux.zip
         asset_content_type: application/zip
 
@@ -47,7 +54,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ./dist
+        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
         asset_name: obs-remote-windows.zip
         asset_content_type: application/zip
         
@@ -68,6 +75,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.repository.releases_url }}
-        asset_path: ./dist
+        asset_path: "./dist/My Nextron App Setup 1.0.0.exe"
         asset_name: obs-remote-windowsx86.zip
         asset_content_type: application/zip
