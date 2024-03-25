@@ -40,5 +40,10 @@
     "react-dom": "^18.2.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
+  },
+  "repository": {
+    "directory": "my-nextron-app",
+    "url": "https://github.com/QuickCodeFusion/desktop-socket.git",
+    "type": "github"
   }
 }
