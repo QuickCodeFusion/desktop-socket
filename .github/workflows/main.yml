@@ -21,7 +21,7 @@ jobs:
     - name: Find AppImage for Linux
       id: find-appimage-linux
       run: |
-        find ./path/to/linux/dist -type f -name '*.AppImage' -print -quit | while read -r appimage; do
+        find ./dist -type f -name '*.AppImage' -print -quit | while read -r appimage; do
           echo "::set-output name=appimage_path::${appimage}"
           echo "::set-output name=appimage_name::$(basename "${appimage}")"
         done
