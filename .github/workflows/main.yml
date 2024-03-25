@@ -21,7 +21,7 @@ jobs:
       run: npm install
     
     - name: Get Version Number
-      run: echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+      run: echo "VERSION=(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
 
     - name: Build Electron app
       run: npm run build:${{ matrix.os }}
