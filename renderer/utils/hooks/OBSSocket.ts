@@ -1,4 +1,4 @@
-import OBSWebSocket, { EventSubscription } from 'obs-websocket-js';
+import OBSWebSocket, { EventSubscription, OBSRequestTypes, RequestBatchRequest, RequestMessage, ResponseMessage } from 'obs-websocket-js';
 import { useEffect, useState } from 'react';
 import { validateIpV4, validatePort } from '../validations';
 
@@ -153,4 +153,46 @@ export const useObsStatus = () => {
     })
 
     return { isConnected, isDisconnected, authentication }
+}
+
+export const useObsRequest = ({ requestType, requestData }: { requestType: keyof OBSRequestTypes, requestData: RequestMessage['requestData']}) => {
+    const [requestResult, setRequestResult] = useState({} as ResponseMessage['responseData'])
+    const [error, setError] = useState('')
+    const [isError, setIsError] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const obsCall = () => {
+        setIsLoading(true)
+        console.log(requestType, requestData)
+        obs.call(requestType, requestData)
+            .then(data => setRequestResult(data))
+            .catch(err => {
+                console.error(err)
+            })
+            .finally(() => setIsLoading(false))
+    }
+    return { requestResult, error, isError, isLoading, obsCall }
+}
+
+export const useObsBatchRequest = ({ requests }: { requests: RequestBatchRequest[]}) => {
+    const [requestResult, setRequestResult] = useState([] as ResponseMessage['responseData'][])
+    const [error, setError] = useState('')
+    const [isError, setIsError] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const obsCall = () => {
+        setIsLoading(true)
+        console.log(requests)
+        obs.callBatch(requests)
+            .then(data => setRequestResult(data.map((data) => data.responseData)))
+            .then(() => {
+                console.log(requestResult)
+            })
+            .catch(err => {
+                console.error(err)
+            })
+            .finally(() => setIsLoading(false))
+    }
+
+    return { requestResult, error, isError, isLoading, obsCall }
 }
