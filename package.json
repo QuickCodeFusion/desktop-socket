@@ -7,11 +7,11 @@
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
-    "build": "nextron build --nopack",
+    "build": "nextron build --no-pack",
     "postinstall": "electron-builder install-app-deps",
-    "build:ubuntu-latest": "nextron build --linux --nopack",
-    "build:windows-latest-x86": "nextron build --win --ia32 --nopack",
-    "build:windows-latest": "nextron build --win --x64 --nopack"
+    "build:ubuntu-latest": "nextron build --linux --no-pack",
+    "build:windows-latest-x86": "nextron build --win --ia32 --no-pack",
+    "build:windows-latest": "nextron build --win --x64 --no-pack"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
