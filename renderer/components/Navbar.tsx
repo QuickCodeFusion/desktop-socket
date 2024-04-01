@@ -1,6 +1,8 @@
 import Link from "next/link"
 import Button from "./ui/Button"
 import { useObsStatus } from "@/utils/hooks/OBSSocket"
+import { useRemoteSocket, useRemoteSocketStatus } from "@/utils/hooks/useRemoteSocket"
+import { useEffect } from "react"
 
 const Navbar = () => {
     const items = [{
@@ -25,6 +27,19 @@ const Navbar = () => {
 
     const { isConnected } = useObsStatus()
 
+    const { isConnected: isConnectedRemote } = useRemoteSocketStatus()
+
+    const {connectRemoteSocket} = useRemoteSocket({rawIp: "127.0.0.1", rawPort: "4455", password: "1234"})
+    
+    useEffect(() => {
+        if(!isConnectedRemote) {
+            connectRemoteSocket()
+        }
+    },[isConnectedRemote])
+
+    console.log(isConnectedRemote);
+    
+
     return(
         <div className="w-screen grid grid-cols-3 place-items-center center p-2 bg-obs-blue-500/55">
             <span className="flex justify-center gap-4 col-span-3">
@@ -35,7 +50,7 @@ const Navbar = () => {
                                 {item.name}
                                 </Link>
                                 { item.activeObs && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
-                                { item.activeRemote && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
+                                { item.activeRemote && <div className={`rounded-full h-3 w-3 ${isConnectedRemote ? "bg-green-500" : "bg-red-500"}`}></div>}
                             </Button>
                     )
                 }
