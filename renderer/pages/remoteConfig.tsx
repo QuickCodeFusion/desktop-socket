@@ -7,9 +7,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRemoteSocket } from "@/components/remoteSocketProvider"
 
 const schema = z.object({
-    ip: z.string().ip({version: "v4", message: "La IP ingresada no es válida. Compruebe que sea una dirección IPv4"}),
+    ip: z.string({description: "La IP contiene caracteres no validos"}),
     port: z.string().min(1).max(5).regex(/^\d{1,5}$/),
     nick: z.string().min(1)
 })
@@ -23,8 +24,11 @@ const remoteConfig: React.FC = () => {
         }
     })
 
+    const { connectRemoteSocket } = useRemoteSocket()
+
     const onSubmit = (values: z.infer<typeof schema>) => {
-        console.log(values)
+        const uri = `${values.ip}` + (values.port ? `:${values.port}` : '')
+        connectRemoteSocket(uri)
     }
     
     return (
@@ -70,7 +74,7 @@ const remoteConfig: React.FC = () => {
                     </FormItem>
                 )}
                 />
-                <Button disabled={Object.keys(form.formState.errors).length > 0} className="disabled:bg-red-600 w-1/2 col-start-2" type="submit">Conectar</Button>
+                <Button disabled={!form.formState.isValid} className="disabled:bg-red-600 w-1/2 col-start-2" type="submit">Conectar</Button>
             </form>
         </Form>
     )

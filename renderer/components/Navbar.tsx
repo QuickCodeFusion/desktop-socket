@@ -1,8 +1,8 @@
 import Link from "next/link"
 import Button from "./ui/Button"
 import { useObsStatus } from "@/utils/hooks/OBSSocket"
-import { useRemoteSocket, useRemoteSocketStatus } from "@/utils/hooks/useRemoteSocket"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { useRemoteSocket } from "./remoteSocketProvider"
 
 const Navbar = () => {
     const items = [{
@@ -27,18 +27,19 @@ const Navbar = () => {
 
     const { isConnected } = useObsStatus()
 
-    const { isConnected: isConnectedRemote } = useRemoteSocketStatus()
+    const [isConnectedRemote, setIsConnectedRemote] = useState(false)
 
-    const {connectRemoteSocket} = useRemoteSocket({rawIp: "127.0.0.1", rawPort: "4455", password: "1234"})
-    
+    const { remoteSocket } = useRemoteSocket()
     useEffect(() => {
-        if(!isConnectedRemote) {
-            connectRemoteSocket()
+        if (remoteSocket) {
+            remoteSocket.on('connect', () => {
+                setIsConnectedRemote(true)
+            })
+            remoteSocket.on('disconnect', () => {
+                setIsConnectedRemote(false)
+            })
         }
-    },[isConnectedRemote])
-
-    console.log(isConnectedRemote);
-    
+    }, [remoteSocket])
 
     return(
         <div className="w-screen grid grid-cols-3 place-items-center center p-2 bg-obs-blue-500/55">
