@@ -10,12 +10,12 @@ const Navbar = () => {
             path: "/home"
         },
         {
-            name: "Configuracion de OBS",
+            name: "Ajustes OBS",
             path: "/configurationObs",
             activeObs: true
         },
         {
-            name: "Configuracion remota",
+            name: "Ajustes remoto",
             path: "/remoteConfig",
             activeRemote: true
         },
