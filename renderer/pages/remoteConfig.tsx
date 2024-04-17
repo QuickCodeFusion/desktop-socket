@@ -76,7 +76,6 @@ const remoteConfig: React.FC = () => {
                 />
                 <Button disabled={!form.formState.isValid} className="disabled:bg-red-600 w-1/2 col-start-2" type="submit">Conectar</Button>
             </form>
-            <Button onClick={ () => sendPacket('FinalClassification')}>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Button>
         </Form>
     )
 }
