@@ -5,12 +5,14 @@ interface RemoteSocketContextI {
    remoteSocket: Socket | null
    connectRemoteSocket: (url: string) => void
    sceneCommand: any
+   loading: boolean
 }
 
 const RemoteSocketContext = createContext<RemoteSocketContextI>({
    remoteSocket: null,
    connectRemoteSocket: (url: string) => {},
-   sceneCommand: null
+   sceneCommand: null,
+   loading: false
 })
 
 export const useRemoteSocket = () => useContext(RemoteSocketContext)
@@ -18,6 +20,7 @@ export const useRemoteSocket = () => useContext(RemoteSocketContext)
 export const RemoteSocketProvider = ({ children }) => {
    const [remoteSocket, setRemoteSocket] = useState<Socket | null>(null)
    const [sceneCommand, setSceneCommand] = useState<any>(null)
+   const [loading, setLoading] = useState<boolean>(false)
 
    const connectRemoteSocket = async (url: string) => {
       try {
@@ -33,9 +36,11 @@ export const RemoteSocketProvider = ({ children }) => {
 
    useEffect(() => {
       const sceneCommandListener = () => {
+         setLoading(true)
          if (remoteSocket) {
             remoteSocket.on("SceneCommand", (data) => {
                setSceneCommand(data)
+               setLoading(false)
             })
          }
       }
@@ -47,7 +52,8 @@ export const RemoteSocketProvider = ({ children }) => {
          value={{
             remoteSocket,
             connectRemoteSocket,
-            sceneCommand
+            sceneCommand,
+            loading
          }}
       >
          {children}
