@@ -22,6 +22,10 @@ const Navbar = () => {
         {
             name: "Conexiones a OBS",
             path: "/conexionesObs"
+        },
+        {
+            name: "Conexiones remotas",
+            path: "/conexionesRemotas"
         }
     ]
 
@@ -46,13 +50,13 @@ const Navbar = () => {
             <span className="flex justify-center gap-4 col-span-3">
                 {
                     items.map((item, index) => 
-                            <Button key={index} className="w-fit bg-obs-blue-500 flex gap-2 items-center">
-                                <Link className="place-self-center" href={item.path} >
-                                {item.name}
-                                </Link>
-                                { item.activeObs && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
-                                { item.activeRemote && <div className={`rounded-full h-3 w-3 ${isConnectedRemote ? "bg-green-500" : "bg-red-500"}`}></div>}
-                            </Button>
+                            <Link className="place-self-center" href={item.path} >
+                                <Button key={index} className="w-fit bg-obs-blue-500 flex gap-2 items-center">
+                                    {item.name}
+                                    { item.activeObs && <div className={`rounded-full h-3 w-3 ${isConnected ? "bg-green-500" : "bg-red-500"}`}></div>}
+                                    { item.activeRemote && <div className={`rounded-full h-3 w-3 ${isConnectedRemote ? "bg-green-500" : "bg-red-500"}`}></div>}
+                                </Button>
+                            </Link>
                     )
                 }
             </span>
