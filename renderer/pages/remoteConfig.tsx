@@ -24,7 +24,7 @@ const remoteConfig: React.FC = () => {
         }
     })
 
-    const { connectRemoteSocket, sendPacket } = useRemoteSocket()
+    const { connectRemoteSocket } = useRemoteSocket()
 
     const onSubmit = (values: z.infer<typeof schema>) => {
         const uri = `${values.ip}` + (values.port ? `:${values.port}` : '')
@@ -34,7 +34,7 @@ const remoteConfig: React.FC = () => {
     return (
         <Form {...form}>
             <Title className="text-center">Configuracion de Websocket Remoto</Title>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-3 p-4 place-items-center">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col md:grid grid-cols-3 p-4 place-items-center">
                 <FormField
                 control={form.control}
                 name='ip'
