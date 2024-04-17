@@ -8,74 +8,56 @@ export const SceneChange: React.FC<{
     scene: string
     setScene: React.Dispatch<React.SetStateAction<string>>
 }> = ({scene, setScene}) => {
-    const [selectedScene, setSelectedScene] = useState('')
-    const [mode, setMode] = useState< 'program' | 'studio' | 'auto'>('program')
-    const [value, setValue] = useState('')
-    const { obsCall: obsCreateAndChangeScene } = useObsBatchRequest({
-        requests: [{
-            requestType: 'CreateScene',
-            requestData: {
-                sceneName: value
-            }
-        },
-        {
-            requestType: 'SetCurrentProgramScene',
-            requestData: {
-                sceneName: value
-            }
-        }]
-    })
-    const { obsCall: setSceneCall } = useObsRequest({ requestType: 'SetCurrentProgramScene', requestData: {sceneName: value} })
-    const { obsCall: createSceneCall } = useObsRequest({ requestType: 'CreateScene', requestData: {sceneName: value} })
-    const { obsCall: setPreviewSceneCall } = useObsRequest({ requestType: 'SetCurrentPreviewScene', requestData: {sceneName: value} })
-    const { sceneCommand, remoteSocket } = useRemoteSocket()
+    const [selectedScene, setSelectedScenes] = useState('')
+    const [mode, setMode] = useState<'program' | 'studio'>('program')
+    const [autoMode, setAutoMode] = useState(false)
+    const [newSceneName, setNewSceneName] = useState('')
+    const { obsCall: createScene } = useObsRequest({ requestType: 'CreateScene', requestData: {sceneName: newSceneName} })
+    const { obsCall: setProgramScene } = useObsRequest({ requestType: 'SetCurrentProgramScene', requestData: {sceneName: newSceneName} })
+    const { obsCall: setPreviewScene } = useObsRequest({ requestType: 'SetCurrentPreviewScene', requestData: {sceneName: newSceneName} })
+    const { sceneCommand, remoteSocket, loading } = useRemoteSocket()
+    const { obsCall: setSceneAuto } = useObsRequest({ requestType: 'SetCurrentProgramScene', requestData: {sceneName: sceneCommand} })
     const sceneChangeWhenAuto = useCallback(() => {
-        if (mode === 'auto' && remoteSocket && value === sceneCommand) {
-            setSceneCall()
+        if (autoMode && remoteSocket) {
+            setSceneAuto()
         }
-
-    }, [mode, remoteSocket, value, sceneCommand, setSceneCall])
+    }, [autoMode, remoteSocket, sceneCommand])
 
     useEffect(() => {
-        if (mode === 'auto') {
-            setValue(sceneCommand)
+        if (autoMode && sceneCommand !== null) {
             sceneChangeWhenAuto()
         }
-    }, [sceneCommand, value])
+    }, [sceneCommand])
     return (
         <div className="flex flex-col gap-4 p-4 items-center justify-center">
             <h1 className="text-2xl text-center">Cambio de escena</h1>
             <span className="flex gap-4">
-                <label htmlFor="check"> Activar modo estudio</label>
-                <input name="check" checked={mode === 'studio'} type="checkbox" className="m-2" onChange={(e) => setMode(e.target.checked ? 'studio' : 'program')} />
+                <label htmlFor="check">Activar modo estudio</label>
+                <input name="check" type="checkbox" className="m-2" checked={mode === 'studio'} disabled={loading || remoteSocket === null} onChange={(e) => setMode(e.target.checked ? 'studio' : 'program')} />
             </span>
             <span className="flex gap-4">
-                <Input value={value} onChange={e => setValue(e.target.value)} setValue={setValue} label="Nombre de escena:"></Input>
-                <Button className="w-fit" disabled={!value} onClick={() => {
-                    setSelectedScene(value)
-                    createSceneCall()
-                    console.log(value)
+                <Input value={newSceneName} onChange={e => setNewSceneName(e.target.value)} label="Scene name:" />
+                <Button className="w-fit" disabled={!newSceneName} onClick={() => {
+                    setSelectedScenes(newSceneName)
+                    createScene()
                 }}>Crear escena</Button>
             </span>
-            <span className={`${mode === 'studio' && 'hidden'} flex flex-col gap-4`}>
-                <Button className="w-fit" disabled={!value} onClick={() => setSceneCall()}> Cambiar a escena {value}</Button>
-                <Button className="w-fit" disabled={!value} onClick={() => obsCreateAndChangeScene()}> Crear y cambiar a escena {value}</Button>
+            <span className={`${mode === 'program' ? 'flex' : 'hidden'} flex-col gap-4`}>
+                <Button className="w-fit" disabled={!newSceneName} onClick={() => setProgramScene()}> Cambiar a escena: {newSceneName}</Button>
             </span>
-            <span className={`${mode === 'program' && 'hidden'} flex flex-col gap-4`}>
-                <Button className="w-fit" disabled={!value} onClick={() => setPreviewSceneCall()}> Cambiar a escena {value} en prevista
-                </Button>
-                <Button className="w-fit" disabled={!value} onClick={() => obsCreateAndChangeScene()}> Cambiar a escena {value} en programa</Button>
+            <span className={`${mode === 'studio' ? 'flex' : 'hidden'} flex-col gap-4`}>
+                <Button className="w-fit" disabled={!newSceneName} onClick={() => setPreviewScene()}> Cambiar a escena: {newSceneName} en preview</Button>
+                <Button className="w-fit" disabled={!newSceneName} onClick={() => setProgramScene()}> Cambiar a escena: {newSceneName} en programa</Button>
             </span>
             <section>
-                <h1 className="text-2xl text-center">Cambio de Escena Automático</h1>
+                <h1 className="text-2xl text-center">Cambio de escena automático</h1>
+                { autoMode && loading && <p>Recibiendo comando remoto...</p>}
+                { autoMode && !loading && sceneCommand !== null && <p>Escena cambiada a: {sceneCommand}</p>}
                 <span className="flex gap-4">
                     <label htmlFor="check">Activar modo automático</label>
-                    <input name="check" type="checkbox" className="m-2" onChange={(e) => {
-                        setMode(e.target.checked ? 'auto' : 'program')
-                        console.log(mode)
-                    }} />
+                    <input name="check" type="checkbox" className="m-2" checked={autoMode} onChange={(e) => setAutoMode(e.target.checked)} />
                 </span>
-                <Button disabled={remoteSocket === null} onClick={() => remoteSocket.emit('Scene')}>Send</Button>
+                <Button disabled={remoteSocket === null} onClick={() => remoteSocket.emit('Scene')}>Enviar comando de prueba</Button>
             </section>
         </div>
     )
