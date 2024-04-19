@@ -24,7 +24,7 @@ export const RemoteSocketProvider = ({ children }) => {
 
    const connectRemoteSocket = async (url: string) => {
       try {
-         const newSocket = io(url)
+         const newSocket = io(`ws://${url}`)
    
          setRemoteSocket(newSocket)
    
