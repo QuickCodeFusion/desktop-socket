@@ -38,7 +38,7 @@ export const RemoteSocketProvider = ({ children }) => {
       const sceneCommandListener = () => {
          setLoading(true)
          if (remoteSocket) {
-            remoteSocket.on("SceneCommand", (data) => {
+            remoteSocket.on("setScene", (data) => {
                setSceneCommand(data)
                setLoading(false)
             })
