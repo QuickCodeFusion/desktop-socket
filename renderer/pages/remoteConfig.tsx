@@ -11,7 +11,7 @@ import { useRemoteSocket } from "@/components/remoteSocketProvider"
 
 const schema = z.object({
     ip: z.string({description: "La IP contiene caracteres no validos"}),
-    port: z.string().min(1).max(5).regex(/^\d{1,5}$/),
+    port: z.string().max(5),
     nick: z.string().min(1)
 })
 const remoteConfig: React.FC = () => {
